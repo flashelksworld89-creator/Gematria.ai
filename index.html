@@ -223,12 +223,13 @@
   <h1>Gematria AI</h1>
   <div class="subtitle">Numbers · Words · Meaning</div>
 
-  <div class="nav">
-    <button onclick="showSection('calculator')">Calculator</button>
-    <button onclick="showSection('ciphers')">Ciphers</button>
-    <button onclick="showSection('saved')">Saved</button>
-    <button onclick="showSection('ai')">AI Chat</button>
-  </div>
+ <div class="nav">
+  <button onclick="showSection('calculator')">Calculator</button>
+  <button onclick="showSection('numbers')">Numbers</button>
+  <button onclick="showSection('ciphers')">Ciphers</button>
+  <button onclick="showSection('saved')">Saved</button>
+  <button onclick="showSection('ai')">AI Chat</button>
+</div>
 
   <!-- CALCULATOR -->
   <section id="calculatorSection" class="card">
@@ -263,7 +264,26 @@
     </div>
 
   </section>
+<!-- NUMBERS -->
+<section id="numbersSection" class="card hidden">
 
+  <h2>Number Database</h2>
+
+  <p class="small">
+    Explore numbers created by your saved cipher calculations and mean values.
+  </p>
+
+  <input
+    id="numberSearch"
+    placeholder="Search for a number..."
+    oninput="renderNumbers()"
+  />
+
+  <div id="numberDetail" class="hidden"></div>
+
+  <div id="numberList"></div>
+
+</section>
   <!-- CIPHERS -->
   <section id="ciphersSection" class="card hidden">
 
@@ -340,12 +360,13 @@ function saveData() {
 
 function showSection(section) {
 
-  const sections = [
-    "calculator",
-    "ciphers",
-    "saved",
-    "ai"
-  ];
+const sections = [
+  "calculator",
+  "numbers",
+  "ciphers",
+  "saved",
+  "ai"
+];
 
   sections.forEach(name => {
     document
@@ -354,10 +375,15 @@ function showSection(section) {
       .add("hidden");
   });
 
-  document
-    .getElementById(section + "Section")
-    .classList
-    .remove("hidden");
+ document
+  .getElementById(section + "Section")
+  .classList
+  .remove("hidden");
+
+if (section === "numbers") {
+  renderNumbers();
+}
+}
 }
 
 function createLetterInputs(values = {}) {
@@ -806,7 +832,394 @@ function deleteSaved(id) {
 
   renderSaved();
 }
+function buildNumberDatabase() {
 
+  const database = {};
+
+  function addNumber(value, entry) {
+
+    const key = String(formatMean(value));
+
+    if (!database[key]) {
+      database[key] = [];
+    }
+
+    database[key].push(entry);
+  }
+
+  savedCalculations.forEach(item => {
+
+    item.results.forEach(result => {
+
+      addNumber(result.value, {
+        calculationId: item.id,
+        text: item.text,
+        type: "cipher",
+        cipherName: result.cipherName,
+        value: result.value,
+        mean: item.mean
+      });
+
+    });
+
+    addNumber(item.mean, {
+      calculationId: item.id,
+      text: item.text,
+      type: "mean",
+      value: item.mean,
+      results: item.results
+    });
+
+  });
+
+  return database;
+}
+
+
+function renderNumbers() {
+
+  const list =
+    document.getElementById("numberList");
+
+  const searchBox =
+    document.getElementById("numberSearch");
+
+  if (!list || !searchBox) return;
+
+  const search =
+    searchBox.value.trim();
+
+  const database =
+    buildNumberDatabase();
+
+  let numbers =
+    Object.keys(database);
+
+  numbers.sort((a, b) =>
+    Number(a) - Number(b)
+  );
+
+  if (search) {
+
+    numbers =
+      numbers.filter(number =>
+        number.includes(search)
+      );
+  }
+
+  if (!numbers.length) {
+
+    list.innerHTML =
+      '<div class="small">No matching numbers found. Save some calculations first.</div>';
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  numbers.forEach(number => {
+
+    const entries =
+      database[number];
+
+    const uniqueWords =
+      new Set(
+        entries.map(entry =>
+          entry.text.toLowerCase()
+        )
+      ).size;
+
+    const cipherCount =
+      entries.filter(
+        entry => entry.type === "cipher"
+      ).length;
+
+    const meanCount =
+      entries.filter(
+        entry => entry.type === "mean"
+      ).length;
+
+    const box =
+      document.createElement("div");
+
+    box.className = "saved-item";
+
+    box.style.cursor = "pointer";
+
+    box.onclick = () =>
+      openNumber(number);
+
+    box.innerHTML = `
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          gap:15px;
+        "
+      >
+
+        <div>
+
+          <div
+            style="
+              font-size:30px;
+              color:#fbbf24;
+            "
+          >
+            ${number}
+          </div>
+
+          <div class="small">
+            ${uniqueWords} word${uniqueWords === 1 ? "" : "s"} ·
+            ${cipherCount} cipher result${cipherCount === 1 ? "" : "s"} ·
+            ${meanCount} mean${meanCount === 1 ? "" : "s"}
+          </div>
+
+        </div>
+
+        <div style="font-size:22px;">
+          →
+        </div>
+
+      </div>
+    `;
+
+    list.appendChild(box);
+  });
+}
+
+
+function openNumber(number) {
+
+  const database =
+    buildNumberDatabase();
+
+  const entries =
+    database[number] || [];
+
+  const detail =
+    document.getElementById("numberDetail");
+
+  const list =
+    document.getElementById("numberList");
+
+  detail.classList.remove("hidden");
+
+  list.classList.add("hidden");
+
+  const cipherEntries =
+    entries.filter(
+      entry => entry.type === "cipher"
+    );
+
+  const meanEntries =
+    entries.filter(
+      entry => entry.type === "mean"
+    );
+
+  let html = `
+    <button
+      onclick="closeNumberDetail()"
+      style="
+        width:auto;
+        margin-bottom:15px;
+      "
+    >
+      ← Back to Numbers
+    </button>
+
+    <div class="mean-box">
+
+      <div class="small">
+        Number
+      </div>
+
+      <div class="mean-number">
+        ${number}
+      </div>
+
+    </div>
+  `;
+
+
+  if (cipherEntries.length) {
+
+    html += `
+      <h3 style="margin-top:25px;">
+        Cipher Matches
+      </h3>
+    `;
+
+    cipherEntries.forEach(entry => {
+
+      html += `
+        <div class="saved-item">
+
+          <strong>
+            ${escapeHtml(entry.text)}
+          </strong>
+
+          <div style="margin-top:8px;">
+            ${escapeHtml(entry.cipherName)}
+          </div>
+
+          <div
+            style="
+              margin-top:5px;
+              color:#fbbf24;
+            "
+          >
+            Value:
+            <strong>${entry.value}</strong>
+          </div>
+
+          <div class="small" style="margin-top:5px;">
+            Calculation mean:
+            ${formatMean(entry.mean)}
+          </div>
+
+        </div>
+      `;
+    });
+  }
+
+
+  if (meanEntries.length) {
+
+    html += `
+      <h3 style="margin-top:25px;">
+        Mean Matches
+      </h3>
+    `;
+
+    meanEntries.forEach(entry => {
+
+      const cipherBreakdown =
+        entry.results
+        .map(result =>
+          `${escapeHtml(result.cipherName)}: <strong>${result.value}</strong>`
+        )
+        .join("<br>");
+
+      html += `
+        <div class="saved-item">
+
+          <strong>
+            ${escapeHtml(entry.text)}
+          </strong>
+
+          <div
+            style="
+              margin-top:8px;
+              color:#fbbf24;
+            "
+          >
+            Mean:
+            <strong>
+              ${formatMean(entry.value)}
+            </strong>
+          </div>
+
+          <div class="small" style="margin-top:10px;">
+            ${cipherBreakdown}
+          </div>
+
+        </div>
+      `;
+    });
+  }
+
+
+  html += `
+    <button
+      onclick="discussNumberWithAI('${number}')"
+      style="margin-top:20px;"
+    >
+      Discuss Number ${number} With AI
+    </button>
+  `;
+
+  detail.innerHTML = html;
+}
+
+
+function closeNumberDetail() {
+
+  const detail =
+    document.getElementById("numberDetail");
+
+  const list =
+    document.getElementById("numberList");
+
+  detail.classList.add("hidden");
+
+  list.classList.remove("hidden");
+}
+
+
+function discussNumberWithAI(number) {
+
+  const database =
+    buildNumberDatabase();
+
+  const entries =
+    database[number] || [];
+
+  let context = `
+    <strong>Number ${number}</strong>
+    <br><br>
+  `;
+
+  entries.forEach(entry => {
+
+    if (entry.type === "cipher") {
+
+      context += `
+        ${escapeHtml(entry.text)}
+        —
+        ${escapeHtml(entry.cipherName)}
+        =
+        ${entry.value}
+        <br>
+      `;
+
+    } else {
+
+      context += `
+        ${escapeHtml(entry.text)}
+        —
+        Mean =
+        ${formatMean(entry.value)}
+        <br>
+      `;
+    }
+
+  });
+
+  document.getElementById(
+    "aiContext"
+  ).innerHTML = context;
+
+  document.getElementById(
+    "aiQuestion"
+  ).value =
+    `What relationships or patterns can you identify among the saved entries associated with number ${number}?`;
+
+  showSection("ai");
+}
+
+
+function escapeHtml(text) {
+
+  const div =
+    document.createElement("div");
+
+  div.textContent =
+    String(text);
+
+  return div.innerHTML;
+}
 function discussWithAI() {
 
   if (!currentCalculation) return;
@@ -853,6 +1266,7 @@ createLetterInputs();
 renderCipherList();
 renderCipherChecklist();
 renderSaved();
+renderNumbers();
 
 </script>
 
