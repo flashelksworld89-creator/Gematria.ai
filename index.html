@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gematria AI</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(to bottom, #020617, #0f172a, #020617);
+      color: #fef3c7;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 40px;
+      font-weight: 300;
+      margin-bottom: 8px;
+      color: #fde68a;
+    }
+
+    .subtitle {
+      color: #d6a94f;
+      letter-spacing: 4px;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 18px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      height: 120px;
+      resize: vertical;
+      background: #020617;
+      color: white;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 17px;
+      outline: none;
+    }
+
+    button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: #92400e;
+      color: #fde68a;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #b45309;
+    }
+
+    .result-number {
+      font-size: 52px;
+      color: #fbbf24;
+      margin: 15px 0;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .nav button {
+      margin: 0;
+      background: #0f172a;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    .small {
+      color: #94a3b8;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>Gematria AI</h1>
+    <div class="subtitle">Numbers · Words · Meaning</div>
+
+    <div class="nav">
+      <button onclick="showCalculator()">Calculator</button>
+      <button onclick="showAI()">AI Chat</button>
+    </div>
+
+    <div id="calculatorSection" class="card">
+
+      <h2>Gematria Calculator</h2>
+
+      <textarea
+        id="textInput"
+        placeholder="Enter a word, phrase, or sentence..."
+      ></textarea>
+
+      <button onclick="calculateGematria()">
+        Calculate
+      </button>
+
+      <div id="resultArea" class="hidden">
+
+        <div class="small">Gematria Value</div>
+
+        <div id="resultNumber" class="result-number">
+          0
+        </div>
+
+        <div id="resultText"></div>
+
+        <button onclick="discussWithAI()">
+          Discuss This Result With AI
+        </button>
+
+      </div>
+
+    </div>
+
+    <div id="aiSection" class="card hidden">
+
+      <h2>AI Discussion</h2>
+
+      <div id="aiContext" class="small">
+        Calculate something first, then send the result here.
+      </div>
+
+      <textarea
+        id="aiQuestion"
+        placeholder="Ask about this calculation..."
+      ></textarea>
+
+      <button onclick="askAI()">
+        Ask AI
+      </button>
+
+      <div id="aiResponse" style="margin-top:20px; text-align:left;"></div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    let currentText = "";
+    let currentValue = 0;
+
+    function calculateGematria() {
+
+      const text = document.getElementById("textInput").value;
+
+      if (!text.trim()) {
+        alert("Enter a word or phrase first.");
+        return;
+      }
+
+      let total = 0;
+
+      const letters = text.toUpperCase();
+
+      for (let i = 0; i < letters.length; i++) {
+
+        const code = letters.charCodeAt(i);
+
+        if (code >= 65 && code <= 90) {
+          total += code - 64;
+        }
+
+      }
+
+      currentText = text;
+      currentValue = total;
+
+      document.getElementById("resultNumber").textContent = total;
+
+      document.getElementById("resultText").textContent =
+        '"' + text + '"';
+
+      document.getElementById("resultArea").classList.remove("hidden");
+    }
+
+    function showCalculator() {
+
+      document
+        .getElementById("calculatorSection")
+        .classList.remove("hidden");
+
+      document
+        .getElementById("aiSection")
+        .classList.add("hidden");
+    }
+
+    function showAI() {
+
+      document
+        .getElementById("calculatorSection")
+        .classList.add("hidden");
+
+      document
+        .getElementById("aiSection")
+        .classList.remove("hidden");
+    }
+
+    function discussWithAI() {
+
+      showAI();
+
+      document.getElementById("aiContext").innerHTML =
+        "Current calculation:<br><br>" +
+        "<strong>" + currentText + "</strong><br>" +
+        "Value: <strong>" + currentValue + "</strong>";
+    }
+
+    function askAI() {
+
+      const question =
+        document.getElementById("aiQuestion").value;
+
+      if (!question.trim()) {
+        alert("Type a question first.");
+        return;
+      }
+
+      document.getElementById("aiResponse").innerHTML =
+        "<strong>AI:</strong><br><br>" +
+        "The AI connection will be added in the next stage. " +
+        "Your calculation and question are ready to be sent.";
+    }
+
+  </script>
+
+</body>
+</html>
