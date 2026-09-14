@@ -11,21 +11,17 @@ function createServer() {
     "gematria_status",
     {
       title: "Gematria Status",
-      description:
-        "Checks whether the Gematria AI connector is online and reachable.",
+      description: "Checks whether the Gematria AI connector is online.",
       inputSchema: {}
     },
-    async () => {
-      return {
-        content: [
-          {
-            type: "text",
-            text:
-              "Gematria AI is online. The ChatGPT connector is working and ready for Gematria tools."
-          }
-        ]
-      };
-    }
+    async () => ({
+      content: [
+        {
+          type: "text",
+          text: "Gematria AI connector is online and working."
+        }
+      ]
+    })
   );
 
   return server;
@@ -41,49 +37,41 @@ export default async function handler(req, res) {
     "Access-Control-Allow-Headers",
     "Content-Type, Accept, Mcp-Session-Id, MCP-Protocol-Version"
   );
+  res.setHeader(
+    "Access-Control-Expose-Headers",
+    "Mcp-Session-Id"
+  );
 
   if (req.method === "OPTIONS") {
     return res.status(204).end();
   }
 
-  // Keep a normal browser test available.
-  if (req.method === "GET") {
-    return res.status(200).json({
-      name: "Gematria AI MCP",
-      status: "online",
-      mcp: true,
-      message: "Gematria MCP endpoint is running."
-    });
-  }
+  const server = createServer();
 
-  if (req.method !== "POST") {
-    return res.status(405).json({
-      error: "Method not allowed"
-    });
-  }
+  const transport = new StreamableHTTPServerTransport({
+    sessionIdGenerator: undefined,
+    enableJsonResponse: true
+  });
 
   try {
-    const server = createServer();
-
-    const transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: undefined,
-      enableJsonResponse: true
-    });
-
-    res.on("close", () => {
-      transport.close();
-    });
-
     await server.connect(transport);
 
-    await transport.handleRequest(req, res, req.body);
+    await transport.handleRequest(
+      req,
+      res,
+      req.body
+    );
   } catch (error) {
-    console.error("MCP error:", error);
+    console.error("MCP ERROR:", error);
 
     if (!res.headersSent) {
-      return res.status(500).json({
-        error: "MCP server error",
-        message: error instanceof Error ? error.message : String(error)
+      res.status(500).json({
+        jsonrpc: "2.0",
+        error: {
+          code: -32603,
+          message: "Internal MCP server error"
+        },
+        id: null
       });
     }
   }
