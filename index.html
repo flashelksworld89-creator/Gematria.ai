@@ -6,258 +6,855 @@
   <title>Gematria AI</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
+      min-height: 100vh;
       background: linear-gradient(to bottom, #020617, #0f172a, #020617);
       color: #fef3c7;
       font-family: Arial, sans-serif;
-      min-height: 100vh;
-      text-align: center;
     }
 
     .container {
-      max-width: 700px;
+      max-width: 900px;
       margin: auto;
-      padding: 40px 20px;
+      padding: 30px 20px 80px;
+    }
+
+    h1, h2, h3 {
+      font-weight: 300;
     }
 
     h1 {
-      font-size: 40px;
-      font-weight: 300;
-      margin-bottom: 8px;
+      text-align: center;
       color: #fde68a;
+      font-size: 40px;
+      margin-bottom: 8px;
     }
 
     .subtitle {
+      text-align: center;
       color: #d6a94f;
       letter-spacing: 4px;
       font-size: 12px;
       text-transform: uppercase;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
 
-    .card {
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      border-radius: 18px;
-      padding: 25px;
+    .nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
       margin-bottom: 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-    }
-
-    textarea {
-      width: 100%;
-      box-sizing: border-box;
-      height: 120px;
-      resize: vertical;
-      background: #020617;
-      color: white;
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      border-radius: 12px;
-      padding: 15px;
-      font-size: 17px;
-      outline: none;
     }
 
     button {
-      margin-top: 15px;
-      width: 100%;
-      padding: 14px;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: 15px;
       background: #92400e;
       color: #fde68a;
-      font-size: 16px;
-      cursor: pointer;
     }
 
     button:hover {
       background: #b45309;
     }
 
-    .result-number {
-      font-size: 52px;
-      color: #fbbf24;
-      margin: 15px 0;
+    .nav button {
+      background: #0f172a;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+
+    textarea,
+    input,
+    select {
+      width: 100%;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      background: #020617;
+      color: white;
+      padding: 12px;
+      border-radius: 10px;
+      margin: 7px 0;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
     }
 
     .hidden {
       display: none;
     }
 
-    .nav {
-      display: flex;
+    .cipher-checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 10px;
-      margin-bottom: 25px;
+      margin: 12px 0;
     }
 
-    .nav button {
-      margin: 0;
-      background: #0f172a;
+    .cipher-option {
+      padding: 10px;
+      background: #020617;
       border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 10px;
+    }
+
+    .cipher-option input {
+      width: auto;
+    }
+
+    .results-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .result-row {
+      background: #020617;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(245, 158, 11, 0.18);
+    }
+
+    .mean-box {
+      margin-top: 16px;
+      padding: 18px;
+      border-radius: 12px;
+      background: rgba(146, 64, 14, 0.25);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      text-align: center;
+    }
+
+    .mean-number {
+      font-size: 40px;
+      color: #fbbf24;
+      margin-top: 6px;
+    }
+
+    .letters-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .letter-box {
+      background: #020617;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .letter-box label {
+      display: block;
+      font-size: 12px;
+      color: #d6a94f;
+    }
+
+    .letter-box input {
+      margin: 5px 0 0;
+      text-align: center;
+    }
+
+    .saved-group {
+      margin-bottom: 18px;
+    }
+
+    .saved-group h3 {
+      color: #fbbf24;
+      margin-bottom: 8px;
+    }
+
+    .saved-item {
+      background: #020617;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      padding: 12px;
+      margin-bottom: 8px;
+      border-radius: 10px;
     }
 
     .small {
       color: #94a3b8;
       font-size: 13px;
     }
+
+    .flex {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .flex button {
+      flex: 1;
+    }
+
+    @media (max-width: 650px) {
+      .nav {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .letters-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <h1>Gematria AI</h1>
-    <div class="subtitle">Numbers · Words · Meaning</div>
+  <h1>Gematria AI</h1>
+  <div class="subtitle">Numbers · Words · Meaning</div>
 
-    <div class="nav">
-      <button onclick="showCalculator()">Calculator</button>
-      <button onclick="showAI()">AI Chat</button>
-    </div>
-
-    <div id="calculatorSection" class="card">
-
-      <h2>Gematria Calculator</h2>
-
-      <textarea
-        id="textInput"
-        placeholder="Enter a word, phrase, or sentence..."
-      ></textarea>
-
-      <button onclick="calculateGematria()">
-        Calculate
-      </button>
-
-      <div id="resultArea" class="hidden">
-
-        <div class="small">Gematria Value</div>
-
-        <div id="resultNumber" class="result-number">
-          0
-        </div>
-
-        <div id="resultText"></div>
-
-        <button onclick="discussWithAI()">
-          Discuss This Result With AI
-        </button>
-
-      </div>
-
-    </div>
-
-    <div id="aiSection" class="card hidden">
-
-      <h2>AI Discussion</h2>
-
-      <div id="aiContext" class="small">
-        Calculate something first, then send the result here.
-      </div>
-
-      <textarea
-        id="aiQuestion"
-        placeholder="Ask about this calculation..."
-      ></textarea>
-
-      <button onclick="askAI()">
-        Ask AI
-      </button>
-
-      <div id="aiResponse" style="margin-top:20px; text-align:left;"></div>
-
-    </div>
-
+  <div class="nav">
+    <button onclick="showSection('calculator')">Calculator</button>
+    <button onclick="showSection('ciphers')">Ciphers</button>
+    <button onclick="showSection('saved')">Saved</button>
+    <button onclick="showSection('ai')">AI Chat</button>
   </div>
 
-  <script>
+  <!-- CALCULATOR -->
+  <section id="calculatorSection" class="card">
 
-    let currentText = "";
-    let currentValue = 0;
+    <h2>Multi-Cipher Calculator</h2>
 
-    function calculateGematria() {
+    <textarea
+      id="textInput"
+      placeholder="Enter a word, phrase, or sentence..."
+    ></textarea>
 
-      const text = document.getElementById("textInput").value;
+    <h3>Select Ciphers</h3>
 
-      if (!text.trim()) {
-        alert("Enter a word or phrase first.");
-        return;
-      }
+    <div id="cipherChecklist" class="cipher-checklist"></div>
 
-      let total = 0;
+    <button onclick="calculateAll()">Calculate</button>
 
-      const letters = text.toUpperCase();
+    <div id="calculationResults" class="hidden">
 
-      for (let i = 0; i < letters.length; i++) {
+      <div id="resultsGrid" class="results-grid"></div>
 
-        const code = letters.charCodeAt(i);
+      <div class="mean-box">
+        <div class="small">Mean Value</div>
+        <div id="meanValue" class="mean-number">0</div>
+      </div>
 
-        if (code >= 65 && code <= 90) {
-          total += code - 64;
-        }
+      <div class="flex" style="margin-top:15px;">
+        <button onclick="saveCalculation()">Save Calculation</button>
+        <button onclick="discussWithAI()">Discuss With AI</button>
+      </div>
 
-      }
+    </div>
 
-      currentText = text;
-      currentValue = total;
+  </section>
 
-      document.getElementById("resultNumber").textContent = total;
+  <!-- CIPHERS -->
+  <section id="ciphersSection" class="card hidden">
 
-      document.getElementById("resultText").textContent =
-        '"' + text + '"';
+    <h2>Custom Cipher Manager</h2>
 
-      document.getElementById("resultArea").classList.remove("hidden");
+    <input
+      id="cipherName"
+      placeholder="Cipher name"
+    />
+
+    <div id="lettersGrid" class="letters-grid"></div>
+
+    <button onclick="saveCipher()">Save Cipher</button>
+
+    <hr style="border-color:rgba(245,158,11,0.2); margin:25px 0;">
+
+    <h3>Your Ciphers</h3>
+
+    <div id="cipherList"></div>
+
+  </section>
+
+  <!-- SAVED -->
+  <section id="savedSection" class="card hidden">
+
+    <h2>Saved Number Database</h2>
+
+    <input
+      id="savedSearch"
+      placeholder="Search by word or number..."
+      oninput="renderSaved()"
+    />
+
+    <div id="savedList"></div>
+
+  </section>
+
+  <!-- AI -->
+  <section id="aiSection" class="card hidden">
+
+    <h2>AI Discussion</h2>
+
+    <div id="aiContext" class="small">
+      Calculate something first.
+    </div>
+
+    <textarea
+      id="aiQuestion"
+      placeholder="Ask about the calculation, pattern, number, or cipher..."
+    ></textarea>
+
+    <button onclick="askAI()">Ask AI</button>
+
+    <div id="aiResponse" style="margin-top:20px;"></div>
+
+  </section>
+
+</div>
+
+<script>
+
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+let ciphers = JSON.parse(localStorage.getItem("gematriaCiphers")) || [];
+let savedCalculations = JSON.parse(localStorage.getItem("gematriaSaved")) || [];
+
+let currentCalculation = null;
+let editingCipherId = null;
+
+function saveData() {
+  localStorage.setItem("gematriaCiphers", JSON.stringify(ciphers));
+  localStorage.setItem("gematriaSaved", JSON.stringify(savedCalculations));
+}
+
+function showSection(section) {
+
+  const sections = [
+    "calculator",
+    "ciphers",
+    "saved",
+    "ai"
+  ];
+
+  sections.forEach(name => {
+    document
+      .getElementById(name + "Section")
+      .classList
+      .add("hidden");
+  });
+
+  document
+    .getElementById(section + "Section")
+    .classList
+    .remove("hidden");
+}
+
+function createLetterInputs(values = {}) {
+
+  const grid = document.getElementById("lettersGrid");
+
+  grid.innerHTML = "";
+
+  alphabet.forEach(letter => {
+
+    const box = document.createElement("div");
+
+    box.className = "letter-box";
+
+    box.innerHTML = `
+      <label>${letter}</label>
+      <input
+        type="number"
+        id="letter_${letter}"
+        value="${values[letter] ?? 0}"
+      />
+    `;
+
+    grid.appendChild(box);
+  });
+}
+
+function saveCipher() {
+
+  const name = document
+    .getElementById("cipherName")
+    .value
+    .trim();
+
+  if (!name) {
+    alert("Enter a cipher name.");
+    return;
+  }
+
+  const values = {};
+
+  alphabet.forEach(letter => {
+
+    values[letter] =
+      Number(
+        document.getElementById("letter_" + letter).value
+      ) || 0;
+  });
+
+  const cipher = {
+    id: editingCipherId || Date.now().toString(),
+    name,
+    values,
+    created: new Date().toISOString()
+  };
+
+  if (editingCipherId) {
+
+    const index =
+      ciphers.findIndex(c => c.id === editingCipherId);
+
+    ciphers[index] = cipher;
+
+  } else {
+
+    ciphers.push(cipher);
+  }
+
+  editingCipherId = null;
+
+  document.getElementById("cipherName").value = "";
+
+  createLetterInputs();
+
+  saveData();
+
+  renderCipherList();
+
+  renderCipherChecklist();
+
+  alert("Cipher saved.");
+}
+
+function renderCipherList() {
+
+  const list = document.getElementById("cipherList");
+
+  if (!ciphers.length) {
+
+    list.innerHTML =
+      '<div class="small">No custom ciphers yet.</div>';
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  ciphers.forEach(cipher => {
+
+    const div = document.createElement("div");
+
+    div.className = "saved-item";
+
+    div.innerHTML = `
+      <strong>${cipher.name}</strong>
+
+      <div class="flex" style="margin-top:10px;">
+        <button onclick="editCipher('${cipher.id}')">
+          Edit
+        </button>
+
+        <button onclick="duplicateCipher('${cipher.id}')">
+          Duplicate
+        </button>
+
+        <button onclick="deleteCipher('${cipher.id}')">
+          Delete
+        </button>
+      </div>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+function editCipher(id) {
+
+  const cipher = ciphers.find(c => c.id === id);
+
+  if (!cipher) return;
+
+  editingCipherId = id;
+
+  document.getElementById("cipherName").value =
+    cipher.name;
+
+  createLetterInputs(cipher.values);
+
+  showSection("ciphers");
+}
+
+function duplicateCipher(id) {
+
+  const cipher = ciphers.find(c => c.id === id);
+
+  if (!cipher) return;
+
+  ciphers.push({
+    ...cipher,
+    id: Date.now().toString(),
+    name: cipher.name + " Copy"
+  });
+
+  saveData();
+
+  renderCipherList();
+
+  renderCipherChecklist();
+}
+
+function deleteCipher(id) {
+
+  if (!confirm("Delete this cipher?")) return;
+
+  ciphers = ciphers.filter(c => c.id !== id);
+
+  saveData();
+
+  renderCipherList();
+
+  renderCipherChecklist();
+}
+
+function renderCipherChecklist() {
+
+  const container =
+    document.getElementById("cipherChecklist");
+
+  if (!ciphers.length) {
+
+    container.innerHTML =
+      '<div class="small">Create at least one cipher in the Ciphers tab first.</div>';
+
+    return;
+  }
+
+  container.innerHTML = "";
+
+  ciphers.forEach(cipher => {
+
+    const label = document.createElement("label");
+
+    label.className = "cipher-option";
+
+    label.innerHTML = `
+      <input
+        type="checkbox"
+        class="cipherCheck"
+        value="${cipher.id}"
+        checked
+      >
+      ${cipher.name}
+    `;
+
+    container.appendChild(label);
+  });
+}
+
+function calculateUsingCipher(text, cipher) {
+
+  let total = 0;
+
+  const upper = text.toUpperCase();
+
+  for (const char of upper) {
+
+    if (cipher.values[char] !== undefined) {
+      total += Number(cipher.values[char]) || 0;
     }
+  }
 
-    function showCalculator() {
+  return total;
+}
 
-      document
-        .getElementById("calculatorSection")
-        .classList.remove("hidden");
+function calculateAll() {
 
-      document
-        .getElementById("aiSection")
-        .classList.add("hidden");
-    }
+  const text =
+    document.getElementById("textInput")
+    .value
+    .trim();
 
-    function showAI() {
+  if (!text) {
+    alert("Enter a word or phrase.");
+    return;
+  }
 
-      document
-        .getElementById("calculatorSection")
-        .classList.add("hidden");
+  const selectedIds =
+    [...document.querySelectorAll(".cipherCheck:checked")]
+    .map(input => input.value);
 
-      document
-        .getElementById("aiSection")
-        .classList.remove("hidden");
-    }
+  if (!selectedIds.length) {
+    alert("Select at least one cipher.");
+    return;
+  }
 
-    function discussWithAI() {
+  const results = [];
 
-      showAI();
+  selectedIds.forEach(id => {
 
-      document.getElementById("aiContext").innerHTML =
-        "Current calculation:<br><br>" +
-        "<strong>" + currentText + "</strong><br>" +
-        "Value: <strong>" + currentValue + "</strong>";
-    }
+    const cipher =
+      ciphers.find(c => c.id === id);
 
-    function askAI() {
+    if (!cipher) return;
 
-      const question =
-        document.getElementById("aiQuestion").value;
+    const value =
+      calculateUsingCipher(text, cipher);
 
-      if (!question.trim()) {
-        alert("Type a question first.");
-        return;
-      }
+    results.push({
+      cipherId: cipher.id,
+      cipherName: cipher.name,
+      value,
+      cipherSnapshot: JSON.parse(JSON.stringify(cipher.values))
+    });
+  });
 
-      document.getElementById("aiResponse").innerHTML =
-        "<strong>AI:</strong><br><br>" +
-        "The AI connection will be added in the next stage. " +
-        "Your calculation and question are ready to be sent.";
-    }
+  const mean =
+    results.reduce((sum, r) => sum + r.value, 0)
+    / results.length;
 
-  </script>
+  currentCalculation = {
+    id: Date.now().toString(),
+    text,
+    results,
+    mean,
+    created: new Date().toISOString()
+  };
+
+  renderCurrentCalculation();
+}
+
+function renderCurrentCalculation() {
+
+  if (!currentCalculation) return;
+
+  const grid = document.getElementById("resultsGrid");
+
+  grid.innerHTML = "";
+
+  currentCalculation.results.forEach(result => {
+
+    const row = document.createElement("div");
+
+    row.className = "result-row";
+
+    row.innerHTML = `
+      <strong>${result.cipherName}</strong>
+      <div style="font-size:26px;color:#fbbf24;margin-top:5px;">
+        ${result.value}
+      </div>
+    `;
+
+    grid.appendChild(row);
+  });
+
+  document.getElementById("meanValue").textContent =
+    formatMean(currentCalculation.mean);
+
+  document
+    .getElementById("calculationResults")
+    .classList
+    .remove("hidden");
+}
+
+function formatMean(value) {
+
+  if (Number.isInteger(value)) {
+    return value;
+  }
+
+  return Number(value.toFixed(4));
+}
+
+function saveCalculation() {
+
+  if (!currentCalculation) {
+    alert("Calculate something first.");
+    return;
+  }
+
+  savedCalculations.push(
+    JSON.parse(JSON.stringify(currentCalculation))
+  );
+
+  saveData();
+
+  renderSaved();
+
+  alert("Calculation saved.");
+}
+
+function renderSaved() {
+
+  const container =
+    document.getElementById("savedList");
+
+  const search =
+    document.getElementById("savedSearch")
+    .value
+    .toLowerCase()
+    .trim();
+
+  if (!savedCalculations.length) {
+
+    container.innerHTML =
+      '<div class="small">No saved calculations yet.</div>';
+
+    return;
+  }
+
+  const filtered =
+    savedCalculations.filter(item => {
+
+      const textMatch =
+        item.text.toLowerCase().includes(search);
+
+      const meanMatch =
+        String(formatMean(item.mean)).includes(search);
+
+      const cipherMatch =
+        item.results.some(r =>
+          String(r.value).includes(search)
+        );
+
+      return textMatch || meanMatch || cipherMatch;
+    });
+
+  container.innerHTML = "";
+
+  filtered.forEach(item => {
+
+    const div = document.createElement("div");
+
+    div.className = "saved-item";
+
+    const resultsHtml =
+      item.results
+      .map(r =>
+        `${r.cipherName}: <strong>${r.value}</strong>`
+      )
+      .join("<br>");
+
+    div.innerHTML = `
+      <strong>${item.text}</strong>
+
+      <div style="margin-top:8px;">
+        ${resultsHtml}
+      </div>
+
+      <div style="margin-top:8px;color:#fbbf24;">
+        Mean: <strong>${formatMean(item.mean)}</strong>
+      </div>
+
+      <div class="flex" style="margin-top:10px;">
+        <button onclick="loadSaved('${item.id}')">
+          Load
+        </button>
+
+        <button onclick="deleteSaved('${item.id}')">
+          Delete
+        </button>
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+function loadSaved(id) {
+
+  const item =
+    savedCalculations.find(i => i.id === id);
+
+  if (!item) return;
+
+  currentCalculation =
+    JSON.parse(JSON.stringify(item));
+
+  document.getElementById("textInput").value =
+    item.text;
+
+  renderCurrentCalculation();
+
+  showSection("calculator");
+}
+
+function deleteSaved(id) {
+
+  if (!confirm("Delete this saved calculation?")) {
+    return;
+  }
+
+  savedCalculations =
+    savedCalculations.filter(i => i.id !== id);
+
+  saveData();
+
+  renderSaved();
+}
+
+function discussWithAI() {
+
+  if (!currentCalculation) return;
+
+  const resultText =
+    currentCalculation.results
+    .map(r => `${r.cipherName}: ${r.value}`)
+    .join("<br>");
+
+  document.getElementById("aiContext").innerHTML = `
+    <strong>${currentCalculation.text}</strong>
+    <br><br>
+    ${resultText}
+    <br><br>
+    Mean:
+    <strong>${formatMean(currentCalculation.mean)}</strong>
+  `;
+
+  showSection("ai");
+}
+
+function askAI() {
+
+  const question =
+    document.getElementById("aiQuestion")
+    .value
+    .trim();
+
+  if (!question) {
+    alert("Enter a question.");
+    return;
+  }
+
+  document.getElementById("aiResponse").innerHTML = `
+    <strong>AI:</strong>
+    <br><br>
+    The calculator data is ready.
+    The next stage will connect this chat to an AI model
+    through a secure server endpoint.
+  `;
+}
+
+createLetterInputs();
+renderCipherList();
+renderCipherChecklist();
+renderSaved();
+
+</script>
 
 </body>
 </html>
