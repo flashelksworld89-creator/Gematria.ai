@@ -1,0 +1,2990 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gematria Research Studio</title>
+
+<style>
+:root {
+    --b:#0d1117;
+    --p:#161b22;
+    --p2:#21262d;
+    --t:#f0f6fc;
+    --m:#9da7b3;
+    --l:#30363d;
+    --a:#8aa4ff;
+}
+
+* {
+    box-sizing:border-box;
+}
+
+body {
+    margin:0;
+    background:var(--b);
+    color:var(--t);
+    font:15px Arial,sans-serif;
+}
+
+header,
+nav,
+main {
+    max-width:1180px;
+    margin:auto;
+}
+
+header {
+    padding:24px 16px 12px;
+}
+
+h1 {
+    margin:0 0 6px;
+}
+
+small,
+.muted {
+    color:var(--m);
+}
+
+nav {
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+    padding:10px 16px 16px;
+}
+
+.btn,
+nav button {
+    background:var(--p2);
+    color:var(--t);
+    border:1px solid var(--l);
+    border-radius:8px;
+    padding:10px 13px;
+    cursor:pointer;
+    font-weight:700;
+}
+
+.primary,
+nav button.on {
+    background:var(--a);
+    color:#07101f;
+}
+
+main {
+    padding:0 16px 40px;
+}
+
+.tab {
+    display:none;
+}
+
+.tab.on {
+    display:block;
+}
+
+.card {
+    background:var(--p);
+    border:1px solid var(--l);
+    border-radius:11px;
+    padding:15px;
+    margin-bottom:14px;
+}
+
+.grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:12px;
+}
+
+.two {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+label {
+    display:block;
+    color:var(--m);
+    font-size:13px;
+    margin:7px 0 4px;
+}
+
+input,
+textarea,
+select {
+    width:100%;
+    background:var(--b);
+    color:var(--t);
+    border:1px solid var(--l);
+    border-radius:7px;
+    padding:9px;
+    font-size:16px;
+}
+
+textarea {
+    min-height:105px;
+}
+
+.actions {
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:11px;
+}
+
+.checks {
+    border:1px solid var(--l);
+    border-radius:8px;
+    padding:8px;
+    max-height:220px;
+    overflow:auto;
+}
+
+.check {
+    display:flex;
+    gap:8px;
+    align-items:center;
+    padding:4px;
+}
+
+.check input {
+    width:auto;
+}
+
+table {
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
+
+th,
+td {
+    text-align:left;
+    padding:8px;
+    border-bottom:1px solid var(--l);
+    vertical-align:top;
+}
+
+.badge {
+    display:inline-block;
+    border:1px solid var(--l);
+    background:var(--p2);
+    border-radius:99px;
+    padding:3px 7px;
+    margin:2px;
+    font-size:12px;
+}
+
+.branch {
+    border:1px solid var(--l);
+    border-radius:8px;
+    margin:7px 0;
+    overflow:hidden;
+}
+
+.branch > button {
+    width:100%;
+    border:0;
+    background:var(--p2);
+    color:var(--t);
+    padding:10px;
+    text-align:left;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.branch .body {
+    display:none;
+    padding:8px;
+}
+
+.branch.open .body {
+    display:block;
+}
+
+.term {
+    padding:7px 2px;
+    border-bottom:1px dashed var(--l);
+}
+
+.letters {
+    display:grid;
+    grid-template-columns:repeat(13,1fr);
+    gap:5px;
+}
+
+.letters label {
+    text-align:center;
+}
+
+.letters input {
+    text-align:center;
+    padding:7px;
+}
+
+.story {
+    white-space:pre-wrap;
+    line-height:1.6;
+    border:1px solid var(--l);
+    background:var(--b);
+    border-radius:8px;
+    padding:12px;
+    min-height:80px;
+}
+
+@media(max-width:720px) {
+    .two {
+        grid-template-columns:1fr;
+    }
+
+    .letters {
+        grid-template-columns:repeat(4,1fr);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Gematria Research Studio</h1>
+
+    <div class="muted">
+        Exact cipher results are preserved.
+        Mean values are calculated, stored, indexed,
+        and searched separately.
+    </div>
+</header>
+
+<nav>
+
+<button class="on" data-tab="single">
+Single Entry
+</button>
+
+<button data-tab="bulk">
+Bulk Upload
+</button>
+
+<button data-tab="numbers">
+Number Database
+</button>
+
+<button data-tab="cross">
+Cross Reference
+</button>
+
+<button data-tab="story">
+Story Builder
+</button>
+
+<button data-tab="ciphers">
+Ciphers
+</button>
+
+</nav>
+
+<main>
+
+<section id="single" class="tab on">
+
+<div class="card">
+
+<h2>Calculator / Single Upload</h2>
+
+<div class="grid">
+
+<div>
+
+<label>
+Word, phrase, or sentence
+</label>
+
+<textarea id="text"></textarea>
+
+</div>
+
+<div>
+
+<label>
+Notes / associations
+</label>
+
+<textarea id="notes"></textarea>
+
+</div>
+
+</div>
+
+<label>
+Use ciphers
+</label>
+
+<div
+    id="singleChecks"
+    class="checks">
+</div>
+
+<div class="actions">
+
+<button
+    id="calc"
+    class="btn">
+Calculate
+</button>
+
+<button
+    id="save"
+    class="btn primary">
+Save
+</button>
+
+</div>
+
+<div id="calcOut"></div>
+
+</div>
+
+<div class="card">
+
+<h3>
+Saved Terminology
+</h3>
+
+<input
+    id="filter"
+    placeholder="Filter alphabetically saved entries...">
+
+<div id="saved"></div>
+
+</div>
+
+</section>
+
+
+<section id="bulk" class="tab">
+
+<div class="card">
+
+<h2>
+Bulk Upload
+</h2>
+
+<div class="muted">
+One term per line.
+Optional notes can be entered as:
+<b>term | notes</b>.
+TXT and CSV are supported.
+</div>
+
+<textarea id="bulkText"></textarea>
+
+<label>
+TXT / CSV file
+</label>
+
+<input
+    id="file"
+    type="file"
+    accept=".txt,.csv">
+
+<label>
+Use ciphers
+</label>
+
+<div
+    id="bulkChecks"
+    class="checks">
+</div>
+
+<div class="actions">
+
+<button
+    id="preview"
+    class="btn">
+Preview
+</button>
+
+<button
+    id="saveBatch"
+    class="btn primary">
+Save Batch
+</button>
+
+</div>
+
+<div id="bulkOut"></div>
+
+</div>
+
+</section>
+
+
+<section id="numbers" class="tab">
+
+<div class="card">
+
+<h2>
+Number Database
+</h2>
+
+<div class="muted">
+
+Click any value to see every word or phrase
+beneath that value in alphabetical A–Z order.
+
+Direct cipher branches and mean branches
+are kept completely separate.
+
+</div>
+
+</div>
+
+<div class="two">
+
+<div>
+
+<h2>
+Direct Cipher Values
+</h2>
+
+<div id="direct"></div>
+
+</div>
+
+<div>
+
+<h2>
+Mean Values
+</h2>
+
+<div id="means"></div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section id="cross" class="tab">
+
+<div class="card">
+
+<h2>
+Cross Reference & Analysis
+</h2>
+
+<div class="grid">
+
+<div>
+
+<label>
+Search
+</label>
+
+<input
+    id="query"
+    placeholder="number, word, phrase, note, cipher...">
+
+</div>
+
+<div>
+
+<label>
+Search area
+</label>
+
+<select id="qtype">
+
+<option value="all">
+Everything
+</option>
+
+<option value="direct">
+Direct values only
+</option>
+
+<option value="mean">
+Mean only
+</option>
+
+<option value="text">
+Terminology / notes only
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="actions">
+
+<button
+    id="analyze"
+    class="btn primary">
+Analyze
+</button>
+
+</div>
+
+<div id="analysis"></div>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Find Related Entries
+</h3>
+
+<div class="muted">
+
+Select a saved word or phrase to find
+other terminology sharing direct cipher
+values or mean values.
+
+</div>
+
+<select id="entryPick"></select>
+
+<div class="actions">
+
+<button
+    id="relate"
+    class="btn">
+Find Shared Values
+</button>
+
+</div>
+
+<div id="related"></div>
+
+</div>
+
+</section>
+
+
+<section id="story" class="tab">
+
+<div class="card">
+
+<h2>
+Branch Story Builder
+</h2>
+
+<div class="muted">
+
+Select entire number branches.
+
+All terminology categorized beneath those
+numbers becomes part of the association pool.
+
+Direct-value associations and mean-value
+associations remain identified separately.
+
+</div>
+
+<div class="two">
+
+<div>
+
+<h3>
+Direct-value branches
+</h3>
+
+<div
+    id="storyDirect"
+    class="checks">
+</div>
+
+</div>
+
+<div>
+
+<h3>
+Mean branches
+</h3>
+
+<div
+    id="storyMean"
+    class="checks">
+</div>
+
+</div>
+
+</div>
+
+<div class="actions">
+
+<button
+    id="poolBtn"
+    class="btn primary">
+Load Selected Branches
+</button>
+
+</div>
+
+<div id="pool"></div>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Build From Associations
+</h3>
+
+<div class="grid">
+
+<div>
+
+<label>
+Terms per sentence
+</label>
+
+<select id="count">
+
+<option>
+3
+</option>
+
+<option selected>
+4
+</option>
+
+<option>
+5
+</option>
+
+<option>
+6
+</option>
+
+</select>
+
+</div>
+
+<div>
+
+<label>
+Style
+</label>
+
+<select id="style">
+
+<option value="narrative">
+Narrative
+</option>
+
+<option value="symbolic">
+Symbolic
+</option>
+
+<option value="sequence">
+Association sequence
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="actions">
+
+<button
+    id="sentence"
+    class="btn">
+Build Sentence
+</button>
+
+<button
+    id="story5"
+    class="btn primary">
+Build 5-Sentence Story
+</button>
+
+</div>
+
+<div
+    id="storyOut"
+    class="story">
+Select branches first.
+</div>
+
+</div>
+
+</section>
+
+
+<section id="ciphers" class="tab">
+
+<div class="card">
+
+<h2>
+Custom A–Z Ciphers
+</h2>
+
+<div class="grid">
+
+<div>
+
+<label>
+Name
+</label>
+
+<input id="cname">
+
+</div>
+
+<div>
+
+<label>
+Mode
+</label>
+
+<select id="cmode">
+
+<option value="sum">
+Numeric sum
+</option>
+
+<option value="exact">
+Exact / symbolic mapping
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div
+    id="letters"
+    class="letters">
+</div>
+
+<div class="actions">
+
+<button
+    id="saveCipher"
+    class="btn primary">
+Save Cipher
+</button>
+
+<button
+    id="clearCipher"
+    class="btn">
+Clear
+</button>
+
+</div>
+
+<div
+    id="cmsg"
+    class="muted">
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Saved Ciphers
+</h3>
+
+<div id="cipherList"></div>
+
+</div>
+
+</section>
+
+</main>
+
+
+<script>
+
+const CK = 'grs_ciphers_v1';
+const EK = 'grs_entries_v1';
+
+const $ = x =>
+    document.getElementById(x);
+
+const esc = s =>
+    String(s ?? '').replace(
+        /[&<>"']/g,
+        c => ({
+            '&':'&amp;',
+            '<':'&lt;',
+            '>':'&gt;',
+            '"':'&quot;',
+            "'":'&#39;'
+        }[c])
+    );
+
+let C =
+    JSON.parse(
+        localStorage.getItem(CK) || '[]'
+    );
+
+let E =
+    JSON.parse(
+        localStorage.getItem(EK) || '[]'
+    );
+
+let last = null;
+let edit = null;
+let pool = [];
+
+
+const id = () =>
+    Date.now().toString(36) +
+    Math.random().toString(36).slice(2);
+
+
+function saveData() {
+
+    localStorage.setItem(
+        CK,
+        JSON.stringify(C)
+    );
+
+    localStorage.setItem(
+        EK,
+        JSON.stringify(E)
+    );
+}
+
+
+function alpha(a,b) {
+
+    return (a.text || a).localeCompare(
+        b.text || b,
+        undefined,
+        {
+            sensitivity:'base'
+        }
+    );
+}
+
+
+function fmt(n) {
+
+    if (Number.isInteger(n)) {
+        return String(n);
+    }
+
+    return String(
+        Math.round(n * 1000000) /
+        1000000
+    );
+}
+
+
+function vk(v) {
+
+    return (
+        typeof v === 'number'
+            ? 'n:'
+            : 's:'
+    ) + String(v);
+}
+
+
+function selected(box) {
+
+    return [
+        ...box.querySelectorAll(
+            'input:checked'
+        )
+    ].map(
+        x => x.value
+    );
+}
+
+
+function value(v) {
+
+    let s =
+        String(v ?? '').trim();
+
+    if (
+        s !== '' &&
+        Number.isFinite(Number(s))
+    ) {
+        return Number(s);
+    }
+
+    return s;
+}
+
+
+function calcCipher(text,c) {
+
+    let letters =
+        [...text.toUpperCase()]
+        .filter(
+            x => /[A-Z]/.test(x)
+        );
+
+    let mapped =
+        letters
+        .map(
+            x => c.values[x]
+        )
+        .filter(
+            x =>
+                x !== undefined &&
+                x !== ''
+        );
+
+
+    if (!mapped.length) {
+
+        if (c.mode === 'sum') {
+            return 0;
+        }
+
+        return '';
+    }
+
+
+    if (
+        c.mode === 'exact' &&
+        !mapped.every(
+            x =>
+                Number.isFinite(
+                    Number(x)
+                )
+        )
+    ) {
+
+        return mapped
+            .map(String)
+            .join('');
+    }
+
+
+    return mapped.reduce(
+        (total,x) => {
+
+            if (
+                Number.isFinite(
+                    Number(x)
+                )
+            ) {
+                return total + Number(x);
+            }
+
+            return total;
+
+        },
+        0
+    );
+}
+
+
+function calculate(text,ids) {
+
+    let results =
+        ids
+        .map(
+            i =>
+                C.find(
+                    c => c.id === i
+                )
+        )
+        .filter(Boolean)
+        .map(
+            c => ({
+                cipherId:c.id,
+                cipherName:c.name,
+                value:
+                    calcCipher(
+                        text,
+                        c
+                    )
+            })
+        );
+
+
+    let nums =
+        results
+        .map(
+            r => {
+
+                if (
+                    Number.isFinite(
+                        Number(r.value)
+                    ) &&
+                    String(r.value).trim() !== ''
+                ) {
+                    return Number(r.value);
+                }
+
+                return null;
+            }
+        )
+        .filter(
+            x => x !== null
+        );
+
+
+    let mean = null;
+
+    if (nums.length) {
+
+        mean =
+            nums.reduce(
+                (a,b) => a+b,
+                0
+            ) /
+            nums.length;
+    }
+
+
+    return {
+        results,
+        mean
+    };
+}
+
+
+function checks() {
+
+    let html;
+
+    if (C.length) {
+
+        html =
+            C.map(
+                c => `
+                <label class="check">
+
+                    <input
+                        type="checkbox"
+                        value="${c.id}"
+                        checked>
+
+                    ${esc(c.name)}
+
+                </label>
+                `
+            ).join('');
+
+    } else {
+
+        html =
+            '<small>Create a cipher first.</small>';
+    }
+
+
+    $('singleChecks').innerHTML =
+        html;
+
+    $('bulkChecks').innerHTML =
+        html;
+}
+
+
+function showCalc() {
+
+    if (!last) {
+        return;
+    }
+
+
+    $('calcOut').innerHTML = `
+
+        <table>
+
+            <tr>
+                <th>Cipher</th>
+                <th>Exact result</th>
+            </tr>
+
+            ${last.results.map(
+                r => `
+                <tr>
+
+                    <td>
+                        ${esc(r.cipherName)}
+                    </td>
+
+                    <td>
+                        <b>
+                            ${esc(r.value)}
+                        </b>
+                    </td>
+
+                </tr>
+                `
+            ).join('')}
+
+        </table>
+
+        <p>
+
+            <b>
+                Separate mean:
+            </b>
+
+            ${
+                last.mean === null
+                    ? 'N/A'
+                    : fmt(last.mean)
+            }
+
+        </p>
+    `;
+}
+
+
+function saved() {
+
+    let q =
+        $('filter')
+        .value
+        .toLowerCase();
+
+
+    let list =
+        E
+        .filter(
+            e =>
+                !q ||
+                e.text
+                    .toLowerCase()
+                    .includes(q) ||
+                (e.notes || '')
+                    .toLowerCase()
+                    .includes(q)
+        )
+        .sort(alpha);
+
+
+    if (!list.length) {
+
+        $('saved').innerHTML =
+            '<small>No saved entries.</small>';
+
+        return;
+    }
+
+
+    $('saved').innerHTML = `
+
+        <table>
+
+            <tr>
+                <th>Term</th>
+                <th>Direct values</th>
+                <th>Mean</th>
+                <th>Notes</th>
+            </tr>
+
+            ${list.map(
+                e => `
+                <tr>
+
+                    <td>
+                        <b>
+                            ${esc(e.text)}
+                        </b>
+                    </td>
+
+                    <td>
+
+                        ${e.results.map(
+                            r => `
+                            <span class="badge">
+
+                                ${esc(r.cipherName)}
+                                =
+                                ${esc(r.value)}
+
+                            </span>
+                            `
+                        ).join('')}
+
+                    </td>
+
+                    <td>
+
+                        ${
+                            e.mean === null
+                                ? '—'
+                                : fmt(e.mean)
+                        }
+
+                    </td>
+
+                    <td>
+                        ${esc(e.notes || '')}
+                    </td>
+
+                </tr>
+                `
+            ).join('')}
+
+        </table>
+    `;
+}
+
+
+function indexes() {
+
+    let direct = {};
+    let means = {};
+
+
+    E.forEach(
+        e => {
+
+            e.results.forEach(
+                r => {
+
+                    if (
+                        r.value === '' ||
+                        r.value === null
+                    ) {
+                        return;
+                    }
+
+
+                    if (!direct[r.cipherName]) {
+
+                        direct[r.cipherName] =
+                            {};
+                    }
+
+
+                    let key =
+                        vk(r.value);
+
+
+                    if (
+                        !direct[
+                            r.cipherName
+                        ][key]
+                    ) {
+
+                        direct[
+                            r.cipherName
+                        ][key] = {
+                            v:r.value,
+                            a:[]
+                        };
+                    }
+
+
+                    direct[
+                        r.cipherName
+                    ][key]
+                    .a
+                    .push(e);
+
+                }
+            );
+
+
+            if (e.mean !== null) {
+
+                let key =
+                    vk(e.mean);
+
+
+                if (!means[key]) {
+
+                    means[key] = {
+                        v:e.mean,
+                        a:[]
+                    };
+                }
+
+
+                means[key]
+                    .a
+                    .push(e);
+            }
+        }
+    );
+
+
+    return {
+        d:direct,
+        m:means
+    };
+}
+
+
+function sortV(a,b) {
+
+    let x =
+        Number(a.v);
+
+    let y =
+        Number(b.v);
+
+
+    if (
+        Number.isFinite(x) &&
+        Number.isFinite(y)
+    ) {
+        return x-y;
+    }
+
+
+    return String(a.v)
+        .localeCompare(
+            String(b.v),
+            undefined,
+            {
+                numeric:true
+            }
+        );
+}
+
+
+function branch(v,a,reason) {
+
+    return `
+
+        <div class="branch">
+
+            <button>
+
+                ${esc(v)}
+
+                <small>
+                    (${a.length})
+                </small>
+
+            </button>
+
+            <div class="body">
+
+                ${
+                    [...a]
+                    .sort(alpha)
+                    .map(
+                        e => `
+                        <div class="term">
+
+                            <b>
+                                ${esc(e.text)}
+                            </b>
+
+                            <div class="muted">
+                                ${esc(reason)}
+                            </div>
+
+                            ${
+                                e.notes
+                                ? `
+                                <small>
+                                    ${esc(e.notes)}
+                                </small>
+                                `
+                                : ''
+                            }
+
+                        </div>
+                        `
+                    )
+                    .join('')
+                }
+
+            </div>
+
+        </div>
+    `;
+}
+
+
+function numberDB() {
+
+    let {
+        d,
+        m
+    } = indexes();
+
+
+    let directHTML = '';
+
+
+    Object.keys(d)
+        .sort()
+        .forEach(
+            cipherName => {
+
+                directHTML += `
+
+                    <div class="card">
+
+                        <h3>
+                            ${esc(cipherName)}
+                        </h3>
+                `;
+
+
+                Object.values(
+                    d[cipherName]
+                )
+                .sort(sortV)
+                .forEach(
+                    group => {
+
+                        directHTML +=
+                            branch(
+                                group.v,
+                                group.a,
+                                cipherName +
+                                ' direct value = ' +
+                                group.v
+                            );
+                    }
+                );
+
+
+                directHTML +=
+                    '</div>';
+            }
+        );
+
+
+    $('direct').innerHTML =
+        directHTML ||
+        '<small>No values yet.</small>';
+
+
+    $('means').innerHTML =
+
+        Object.values(m)
+        .sort(sortV)
+        .map(
+            group =>
+                branch(
+                    fmt(group.v),
+                    group.a,
+                    'Mean = ' +
+                    fmt(group.v)
+                )
+        )
+        .join('')
+
+        ||
+
+        '<small>No means yet.</small>';
+
+
+    document
+    .querySelectorAll(
+        '.branch > button'
+    )
+    .forEach(
+        button => {
+
+            button.onclick = () => {
+
+                button
+                .parentElement
+                .classList
+                .toggle('open');
+            };
+        }
+    );
+}
+
+
+function storyBranches() {
+
+    let {
+        d,
+        m
+    } = indexes();
+
+
+    let merged = {};
+
+
+    Object.values(d)
+        .forEach(
+            cipherGroups => {
+
+                Object.values(
+                    cipherGroups
+                )
+                .forEach(
+                    group => {
+
+                        let key =
+                            vk(group.v);
+
+
+                        if (!merged[key]) {
+
+                            merged[key] = {
+                                v:group.v,
+                                ids:new Set()
+                            };
+                        }
+
+
+                        group.a
+                            .forEach(
+                                e =>
+                                    merged[key]
+                                    .ids
+                                    .add(e.id)
+                            );
+                    }
+                );
+            }
+        );
+
+
+    $('storyDirect').innerHTML =
+
+        Object.values(merged)
+        .sort(sortV)
+        .map(
+            group => `
+
+            <label class="check">
+
+                <input
+                    class="sd"
+                    type="checkbox"
+                    value="${esc(vk(group.v))}">
+
+                ${esc(group.v)}
+
+                <small>
+                    (${group.ids.size})
+                </small>
+
+            </label>
+            `
+        )
+        .join('');
+
+
+    $('storyMean').innerHTML =
+
+        Object.values(m)
+        .sort(sortV)
+        .map(
+            group => `
+
+            <label class="check">
+
+                <input
+                    class="sm"
+                    type="checkbox"
+                    value="${esc(vk(group.v))}">
+
+                ${fmt(group.v)}
+
+                <small>
+                    (${group.a.length})
+                </small>
+
+            </label>
+            `
+        )
+        .join('');
+}
+
+
+function refresh() {
+
+    checks();
+
+    saved();
+
+    numberDB();
+
+    storyBranches();
+
+
+    $('entryPick').innerHTML =
+
+        '<option value="">Select saved entry...</option>'
+
+        +
+
+        E.slice()
+        .sort(alpha)
+        .map(
+            e => `
+            <option value="${e.id}">
+                ${esc(e.text)}
+            </option>
+            `
+        )
+        .join('');
+
+
+    cipherList();
+}
+
+
+function bulkRows() {
+
+    let ids =
+        selected(
+            $('bulkChecks')
+        );
+
+
+    let existing =
+        new Set(
+            E.map(
+                e =>
+                    e.text.toLowerCase()
+            )
+        );
+
+
+    return $('bulkText')
+        .value
+        .split(/\r?\n/)
+        .map(
+            x => x.trim()
+        )
+        .filter(Boolean)
+        .map(
+            line => {
+
+                let parts =
+                    line.split('|');
+
+                let text =
+                    parts
+                    .shift()
+                    .trim();
+
+                let result =
+                    calculate(
+                        text,
+                        ids
+                    );
+
+
+                return {
+
+                    text,
+
+                    notes:
+                        parts
+                        .join('|')
+                        .trim(),
+
+                    ...result,
+
+                    dup:
+                        existing.has(
+                            text.toLowerCase()
+                        )
+                };
+            }
+        );
+}
+
+
+function bulkPreview() {
+
+    let rows =
+        bulkRows();
+
+
+    $('bulkOut').innerHTML = `
+
+        <p>
+
+            <b>
+                ${rows.length}
+            </b>
+
+            rows;
+
+            ${
+                rows.filter(
+                    x => x.dup
+                ).length
+            }
+
+            duplicates.
+
+        </p>
+
+        ${
+            rows.length
+            ? `
+
+            <table>
+
+                <tr>
+                    <th>Term</th>
+                    <th>Direct</th>
+                    <th>Mean</th>
+                    <th>Status</th>
+                </tr>
+
+                ${
+                    rows
+                    .slice(0,200)
+                    .map(
+                        x => `
+                        <tr>
+
+                            <td>
+                                ${esc(x.text)}
+                            </td>
+
+                            <td>
+
+                                ${
+                                    x.results
+                                    .map(
+                                        r =>
+                                            esc(
+                                                r.cipherName
+                                            )
+                                            +
+                                            '='
+                                            +
+                                            esc(
+                                                r.value
+                                            )
+                                    )
+                                    .join(', ')
+                                }
+
+                            </td>
+
+                            <td>
+
+                                ${
+                                    x.mean === null
+                                    ? '—'
+                                    : fmt(x.mean)
+                                }
+
+                            </td>
+
+                            <td>
+
+                                ${
+                                    x.dup
+                                    ? 'Duplicate'
+                                    : 'New'
+                                }
+
+                            </td>
+
+                        </tr>
+                        `
+                    )
+                    .join('')
+                }
+
+            </table>
+            `
+            : ''
+        }
+    `;
+}
+
+
+function cipherList() {
+
+    $('cipherList').innerHTML =
+
+        C.slice()
+        .sort(
+            (a,b) =>
+                a.name.localeCompare(
+                    b.name
+                )
+        )
+        .map(
+            c => `
+
+            <div class="term">
+
+                <b>
+                    ${esc(c.name)}
+                </b>
+
+                <small>
+                    ${c.mode}
+                </small>
+
+                <button
+                    class="btn ce"
+                    data-id="${c.id}">
+                    Edit
+                </button>
+
+                <button
+                    class="btn cd"
+                    data-id="${c.id}">
+                    Delete
+                </button>
+
+            </div>
+            `
+        )
+        .join('');
+
+
+    document
+    .querySelectorAll('.ce')
+    .forEach(
+        button => {
+
+            button.onclick =
+                () =>
+                    loadC(
+                        button.dataset.id
+                    );
+        }
+    );
+
+
+    document
+    .querySelectorAll('.cd')
+    .forEach(
+        button => {
+
+            button.onclick = () => {
+
+                if (
+                    confirm(
+                        'Delete cipher? Saved entry results remain.'
+                    )
+                ) {
+
+                    C =
+                        C.filter(
+                            c =>
+                                c.id !==
+                                button.dataset.id
+                        );
+
+
+                    saveData();
+
+                    refresh();
+                }
+            };
+        }
+    );
+}
+
+
+function clearC() {
+
+    edit = null;
+
+    $('cname').value = '';
+
+    $('cmode').value =
+        'sum';
+
+
+    document
+    .querySelectorAll('.lv')
+    .forEach(
+        input =>
+            input.value = ''
+    );
+
+
+    $('cmsg').textContent = '';
+}
+
+
+function loadC(i) {
+
+    let c =
+        C.find(
+            x => x.id === i
+        );
+
+
+    if (!c) {
+        return;
+    }
+
+
+    edit = i;
+
+    $('cname').value =
+        c.name;
+
+    $('cmode').value =
+        c.mode;
+
+
+    document
+    .querySelectorAll('.lv')
+    .forEach(
+        input => {
+
+            input.value =
+                c.values[
+                    input.dataset.l
+                ] ?? '';
+        }
+    );
+
+
+    $('cmsg').textContent =
+        'Editing ' + c.name;
+}
+
+
+function sample(a,n) {
+
+    a = [...a];
+
+
+    for (
+        let i=a.length-1;
+        i;
+        i--
+    ) {
+
+        let j =
+            Math.floor(
+                Math.random() *
+                (i+1)
+            );
+
+
+        [
+            a[i],
+            a[j]
+        ] = [
+            a[j],
+            a[i]
+        ];
+    }
+
+
+    return a.slice(
+        0,
+        Math.min(
+            n,
+            a.length
+        )
+    );
+}
+
+
+function buildSentence(a,style) {
+
+    let terms =
+        a.map(
+            x => x.text
+        );
+
+
+    if (!terms.length) {
+
+        return 'No terms loaded.';
+    }
+
+
+    if (terms.length === 1) {
+
+        return (
+            terms[0] +
+            ' becomes the central association.'
+        );
+    }
+
+
+    if (style === 'sequence') {
+
+        return (
+            terms.join(' → ') +
+            '.'
+        );
+    }
+
+
+    if (style === 'symbolic') {
+
+        return (
+            terms[0] +
+            ' echoes through ' +
+            terms.slice(1,-1).join(', ') +
+            ' and resolves into ' +
+            terms[terms.length-1] +
+            '.'
+        );
+    }
+
+
+    return (
+        terms[0] +
+        ' moved toward ' +
+        terms[1] +
+        ', where ' +
+        (
+            terms[2] ||
+            terms[0]
+        ) +
+        ' revealed a connection to ' +
+        terms[terms.length-1] +
+        '.'
+    );
+}
+
+
+$('letters').innerHTML =
+
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    .split('')
+    .map(
+        letter => `
+
+        <div>
+
+            <label>
+                ${letter}
+            </label>
+
+            <input
+                class="lv"
+                data-l="${letter}">
+
+        </div>
+        `
+    )
+    .join('');
+
+
+document
+.querySelector('nav')
+.onclick = event => {
+
+    if (
+        !event.target.dataset.tab
+    ) {
+        return;
+    }
+
+
+    document
+    .querySelectorAll(
+        'nav button'
+    )
+    .forEach(
+        button => {
+
+            button.classList.toggle(
+                'on',
+                button === event.target
+            );
+        }
+    );
+
+
+    document
+    .querySelectorAll('.tab')
+    .forEach(
+        tab => {
+
+            tab.classList.toggle(
+                'on',
+                tab.id ===
+                event.target.dataset.tab
+            );
+        }
+    );
+
+
+    if (
+        event.target.dataset.tab ===
+        'numbers'
+    ) {
+        numberDB();
+    }
+};
+
+
+$('calc').onclick = () => {
+
+    let text =
+        $('text')
+        .value
+        .trim();
+
+
+    let ids =
+        selected(
+            $('singleChecks')
+        );
+
+
+    if (
+        !text ||
+        !ids.length
+    ) {
+
+        $('calcOut').innerHTML =
+            '<p>Enter text and select a cipher.</p>';
+
+        return;
+    }
+
+
+    last =
+        calculate(
+            text,
+            ids
+        );
+
+
+    showCalc();
+};
+
+
+$('save').onclick = () => {
+
+    let text =
+        $('text')
+        .value
+        .trim();
+
+
+    if (!text) {
+        return;
+    }
+
+
+    if (!last) {
+
+        $('calc').click();
+
+        if (!last) {
+            return;
+        }
+    }
+
+
+    let old =
+        E.find(
+            e =>
+                e.text
+                .toLowerCase() ===
+                text.toLowerCase()
+        );
+
+
+    let entry = {
+
+        id:
+            old?.id ||
+            id(),
+
+        text,
+
+        notes:
+            $('notes')
+            .value
+            .trim(),
+
+        results:
+            JSON.parse(
+                JSON.stringify(
+                    last.results
+                )
+            ),
+
+        mean:
+            last.mean,
+
+        created:
+            old?.created ||
+            new Date()
+            .toISOString()
+    };
+
+
+    E =
+        E.filter(
+            e =>
+                e.id !==
+                entry.id
+        );
+
+
+    E.push(entry);
+
+
+    saveData();
+
+    refresh();
+
+
+    $('calcOut')
+    .insertAdjacentHTML(
+        'beforeend',
+        '<p><b>Saved.</b></p>'
+    );
+};
+
+
+$('filter').oninput =
+    saved;
+
+
+$('preview').onclick =
+    bulkPreview;
+
+
+$('saveBatch').onclick = () => {
+
+    let added = 0;
+
+
+    bulkRows()
+    .forEach(
+        row => {
+
+            if (!row.dup) {
+
+                E.push({
+
+                    id:id(),
+
+                    text:
+                        row.text,
+
+                    notes:
+                        row.notes,
+
+                    results:
+                        row.results,
+
+                    mean:
+                        row.mean,
+
+                    created:
+                        new Date()
+                        .toISOString()
+
+                });
+
+
+                added++;
+            }
+        }
+    );
+
+
+    saveData();
+
+    refresh();
+
+    bulkPreview();
+
+
+    $('bulkOut')
+    .insertAdjacentHTML(
+        'afterbegin',
+        '<p><b>' +
+        added +
+        ' new entries saved.</b></p>'
+    );
+};
+
+
+$('file').onchange =
+async event => {
+
+    let file =
+        event.target.files[0];
+
+
+    if (!file) {
+        return;
+    }
+
+
+    let text =
+        await file.text();
+
+
+    if (
+        file.name
+        .toLowerCase()
+        .endsWith('.csv')
+    ) {
+
+        text =
+            text
+            .split(/\r?\n/)
+            .map(
+                row =>
+                    row
+                    .split(',')
+                    .map(
+                        cell =>
+                            cell.replace(
+                                /^"|"$/g,
+                                ''
+                            )
+                    )
+                    .join(' | ')
+            )
+            .join('\n');
+    }
+
+
+    $('bulkText').value =
+        text;
+};
+
+
+$('analyze').onclick = () => {
+
+    let q =
+        $('query')
+        .value
+        .trim();
+
+
+    let type =
+        $('qtype').value;
+
+
+    let qLower =
+        q.toLowerCase();
+
+
+    let num =
+        q !== '' &&
+        Number.isFinite(
+            Number(q)
+        )
+        ? Number(q)
+        : null;
+
+
+    let matches = [];
+
+
+    E.forEach(
+        entry => {
+
+            let reasons = [];
+
+
+            if (
+                (
+                    type === 'all' ||
+                    type === 'text'
+                )
+                &&
+                (
+                    entry.text
+                    .toLowerCase()
+                    .includes(qLower)
+                    ||
+                    (entry.notes || '')
+                    .toLowerCase()
+                    .includes(qLower)
+                )
+            ) {
+
+                reasons.push(
+                    'text/notes'
+                );
+            }
+
+
+            if (
+                type === 'all' ||
+                type === 'direct'
+            ) {
+
+                entry.results
+                .forEach(
+                    result => {
+
+                        if (
+                            String(
+                                result.value
+                            )
+                            .toLowerCase() ===
+                            qLower
+
+                            ||
+
+                            (
+                                num !== null &&
+                                Number(
+                                    result.value
+                                ) === num
+                            )
+
+                            ||
+
+                            result.cipherName
+                            .toLowerCase()
+                            .includes(qLower)
+                        ) {
+
+                            reasons.push(
+                                'direct ' +
+                                result.cipherName +
+                                '=' +
+                                result.value
+                            );
+                        }
+                    }
+                );
+            }
+
+
+            if (
+                (
+                    type === 'all' ||
+                    type === 'mean'
+                )
+
+                &&
+
+                entry.mean !== null
+
+                &&
+
+                num !== null
+
+                &&
+
+                Number(entry.mean) ===
+                num
+            ) {
+
+                reasons.push(
+                    'mean=' +
+                    fmt(entry.mean)
+                );
+            }
+
+
+            if (reasons.length) {
+
+                matches.push({
+                    e:entry,
+                    r:reasons
+                });
+            }
+        }
+    );
+
+
+    matches.sort(
+        (x,y) =>
+            alpha(
+                x.e,
+                y.e
+            )
+    );
+
+
+    $('analysis').innerHTML =
+
+        '<p><b>' +
+        matches.length +
+        '</b> matches.</p>'
+
+        +
+
+        matches.map(
+            item => `
+
+            <div class="term">
+
+                <b>
+                    ${esc(item.e.text)}
+                </b>
+
+                ${
+                    item.r.map(
+                        reason => `
+                        <span class="badge">
+                            ${esc(reason)}
+                        </span>
+                        `
+                    )
+                    .join('')
+                }
+
+            </div>
+            `
+        )
+        .join('');
+};
+
+
+$('relate').onclick = () => {
+
+    let entry =
+        E.find(
+            x =>
+                x.id ===
+                $('entryPick').value
+        );
+
+
+    if (!entry) {
+        return;
+    }
+
+
+    let values =
+        new Set(
+            entry.results
+            .map(
+                r =>
+                    vk(r.value)
+            )
+        );
+
+
+    let meanKey =
+        entry.mean === null
+        ? null
+        : vk(entry.mean);
+
+
+    let matches = [];
+
+
+    E.forEach(
+        other => {
+
+            if (
+                other.id ===
+                entry.id
+            ) {
+                return;
+            }
+
+
+            let reasons = [];
+
+
+            other.results
+            .forEach(
+                result => {
+
+                    if (
+                        values.has(
+                            vk(result.value)
+                        )
+                    ) {
+
+                        reasons.push(
+                            'shared direct ' +
+                            result.value
+                        );
+                    }
+                }
+            );
+
+
+            if (
+                meanKey &&
+                other.mean !== null &&
+                vk(other.mean) ===
+                meanKey
+            ) {
+
+                reasons.push(
+                    'shared mean ' +
+                    fmt(other.mean)
+                );
+            }
+
+
+            if (reasons.length) {
+
+                matches.push({
+                    o:other,
+                    r:reasons
+                });
+            }
+        }
+    );
+
+
+    matches.sort(
+        (x,y) =>
+            alpha(
+                x.o,
+                y.o
+            )
+    );
+
+
+    $('related').innerHTML =
+
+        matches.length
+
+        ?
+
+        matches.map(
+            item => `
+
+            <div class="term">
+
+                <b>
+                    ${esc(item.o.text)}
+                </b>
+
+                ${
+                    item.r
+                    .map(
+                        reason => `
+                        <span class="badge">
+                            ${esc(reason)}
+                        </span>
+                        `
+                    )
+                    .join('')
+                }
+
+            </div>
+            `
+        )
+        .join('')
+
+        :
+
+        '<small>No shared values.</small>';
+};
+
+
+$('poolBtn').onclick = () => {
+
+    let directKeys =
+        new Set(
+            [
+                ...document
+                .querySelectorAll(
+                    '.sd:checked'
+                )
+            ]
+            .map(
+                x => x.value
+            )
+        );
+
+
+    let meanKeys =
+        new Set(
+            [
+                ...document
+                .querySelectorAll(
+                    '.sm:checked'
+                )
+            ]
+            .map(
+                x => x.value
+            )
+        );
+
+
+    let map =
+        new Map();
+
+
+    E.forEach(
+        entry => {
+
+            let reasons = [];
+
+
+            entry.results
+            .forEach(
+                result => {
+
+                    if (
+                        directKeys.has(
+                            vk(result.value)
+                        )
+                    ) {
+
+                        reasons.push(
+                            'direct ' +
+                            result.cipherName +
+                            '=' +
+                            result.value
+                        );
+                    }
+                }
+            );
+
+
+            if (
+                entry.mean !== null &&
+                meanKeys.has(
+                    vk(entry.mean)
+                )
+            ) {
+
+                reasons.push(
+                    'mean=' +
+                    fmt(entry.mean)
+                );
+            }
+
+
+            if (reasons.length) {
+
+                map.set(
+                    entry.id,
+                    {
+                        ...entry,
+                        why:reasons
+                    }
+                );
+            }
+        }
+    );
+
+
+    pool =
+        [...map.values()]
+        .sort(alpha);
+
+
+    $('pool').innerHTML = `
+
+        <p>
+
+            <b>
+                ${pool.length}
+                terms loaded.
+            </b>
+
+        </p>
+
+        ${
+            pool.map(
+                entry => `
+
+                <span class="badge">
+
+                    ${esc(entry.text)}
+                    —
+                    ${esc(
+                        entry.why.join('; ')
+                    )}
+
+                </span>
+                `
+            )
+            .join('')
+        }
+    `;
+};
+
+
+$('sentence').onclick = () => {
+
+    $('storyOut').textContent =
+
+        buildSentence(
+
+            sample(
+                pool,
+                Number(
+                    $('count').value
+                )
+            ),
+
+            $('style').value
+        );
+};
+
+
+$('story5').onclick = () => {
+
+    if (!pool.length) {
+
+        $('storyOut').textContent =
+            'Select and load branches first.';
+
+        return;
+    }
+
+
+    let sentences = [];
+
+
+    for (
+        let i=0;
+        i<5;
+        i++
+    ) {
+
+        sentences.push(
+
+            buildSentence(
+
+                sample(
+                    pool,
+                    Number(
+                        $('count').value
+                    )
+                ),
+
+                $('style').value
+            )
+        );
+    }
+
+
+    $('storyOut').textContent =
+        sentences.join(' ');
+};
+
+
+$('saveCipher').onclick = () => {
+
+    let name =
+        $('cname')
+        .value
+        .trim();
+
+
+    let values = {};
+
+
+    document
+    .querySelectorAll('.lv')
+    .forEach(
+        input => {
+
+            if (
+                input.value.trim() !== ''
+            ) {
+
+                values[
+                    input.dataset.l
+                ] =
+                    value(
+                        input.value
+                    );
+            }
+        }
+    );
+
+
+    if (
+        !name ||
+        !Object.keys(values).length
+    ) {
+
+        $('cmsg').textContent =
+            'Enter a name and letter values.';
+
+        return;
+    }
+
+
+    let cipher = {
+
+        id:
+            edit ||
+            id(),
+
+        name,
+
+        mode:
+            $('cmode').value,
+
+        values
+    };
+
+
+    C =
+        C.filter(
+            c =>
+                c.id !==
+                cipher.id
+        );
+
+
+    C.push(cipher);
+
+
+    saveData();
+
+    clearC();
+
+    refresh();
+
+
+    $('cmsg').textContent =
+        'Cipher saved.';
+};
+
+
+$('clearCipher').onclick =
+    clearC;
+
+
+if (!C.length) {
+
+    let values = {};
+
+
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    .split('')
+    .forEach(
+        (letter,index) => {
+
+            values[letter] =
+                index + 1;
+        }
+    );
+
+
+    C = [
+        {
+            id:id(),
+            name:'A1-Z26 Starter',
+            mode:'sum',
+            values
+        }
+    ];
+
+
+    saveData();
+}
+
+
+refresh();
+
+</script>
+
+</body>
+</html>
