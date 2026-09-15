@@ -15,7 +15,17 @@ export default async function handler(req, res) {
       error: "Method not allowed"
     });
   }
+const syncSecret = req.headers["x-gematria-sync-secret"];
 
+if (
+  !process.env.GEMATRIA_SYNC_SECRET ||
+  syncSecret !== process.env.GEMATRIA_SYNC_SECRET
+) {
+  return res.status(401).json({
+    success: false,
+    error: "Unauthorized"
+  });
+}
   try {
     if (!process.env.DATABASE_URL) {
       return res.status(500).json({
