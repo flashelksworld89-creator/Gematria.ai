@@ -1333,7 +1333,8 @@ async function syncToChatGPT() {
     const response = await fetch("https://gematria-ai-gray.vercel.app/api/sync", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+       "Content-Type": "application/json",
+"X-Gematria-Sync-Secret": localStorage.getItem("gematriaSyncSecret") || ""
       },
       body: JSON.stringify({
         entries: savedCalculations,
