@@ -2,6 +2,36 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { neon } from "@neondatabase/serverless";
 import { z } from "zod";
+import { createRemoteJWKSet, jwtVerify } from "jose";
+async function verifyAccessToken(req) {
+  const authHeader = req.headers.authorization || "";
+
+  if (!authHeader.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const token = authHeader.slice(7);
+
+  const domain = process.env.AUTH0_DOMAIN;
+  const audience = process.env.AUTH0_AUDIENCE;
+
+  if (!domain || !audience) {
+    throw new Error("Auth0 environment variables are not configured.");
+  }
+
+  const issuer = `https://${domain}/`;
+
+  const JWKS = createRemoteJWKSet(
+    new URL(`${issuer}.well-known/jwks.json`)
+  );
+
+  const { payload } = await jwtVerify(token, JWKS, {
+    issuer,
+    audience
+  });
+
+  return payload;
+}
 
 function createServer() {
   const server = new McpServer({
@@ -406,6 +436,44 @@ export default async function handler(req, res) {
     return res.status(204).end();
   }
 
+
+  let user;
+
+try {
+  user = await verifyAccessToken(req);
+} catch (error) {
+  console.error("AUTH ERROR:", error);
+
+  res.setHeader(
+    "WWW-Authenticate",
+    `Bearer resource_metadata="https://gematria-ai-gray.vercel.app/.well-known/oauth-protected-resource"`
+  );
+
+  return res.status(401).json({
+    jsonrpc: "2.0",
+    error: {
+      code: -32001,
+      message: "Invalid or expired access token."
+    },
+    id: null
+  });
+}
+
+if (!user) {
+  res.setHeader(
+    "WWW-Authenticate",
+    `Bearer resource_metadata="https://gematria-ai-gray.vercel.app/.well-known/oauth-protected-resource"`
+  );
+
+  return res.status(401).json({
+    jsonrpc: "2.0",
+    error: {
+      code: -32001,
+      message: "Authentication required."
+    },
+    id: null
+  });
+}
   if (!process.env.DATABASE_URL) {
     return res.status(500).json({
       jsonrpc: "2.0",
