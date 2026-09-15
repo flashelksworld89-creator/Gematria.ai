@@ -368,6 +368,16 @@
   <section id="aiSection" class="card hidden">
     <h2>AI Discussion</h2>
 
+    <div style="margin-bottom:25px; padding-bottom:20px; border-bottom:1px solid #334155;">
+      <h3>ChatGPT Database Sync</h3>
+      <p class="small">
+        Sync your saved terminology, calculations, means, notes, and custom ciphers
+        so the Gematria AI connector in ChatGPT can access them.
+      </p>
+      <button onclick="syncToChatGPT()">Sync to ChatGPT</button>
+      <div id="syncStatus" class="small" style="margin-top:12px;">Not synced yet.</div>
+    </div>
+
     <div id="aiContext" class="small">Calculate something first.</div>
 
     <textarea id="aiQuestion" placeholder="Ask about the calculation, pattern, number, notes, or cipher..."></textarea>
@@ -1313,6 +1323,42 @@ function discussWithAI() {
   `;
 
   showSection("ai");
+}
+
+async function syncToChatGPT() {
+  const status = document.getElementById("syncStatus");
+  status.textContent = "Syncing with ChatGPT database...";
+
+  try {
+    const response = await fetch("https://gematria-ai-gray.vercel.app/api/sync", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        entries: savedCalculations,
+        ciphers: ciphers
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || data.error || "Synchronization failed.");
+    }
+
+    status.innerHTML =
+      "<strong>Sync complete.</strong><br>" +
+      data.entriesSynced +
+      " saved entries synced.<br>" +
+      data.ciphersSynced +
+      " custom ciphers synced.";
+  } catch (error) {
+    console.error("ChatGPT sync error:", error);
+    status.innerHTML =
+      "<strong>Sync failed.</strong><br>" +
+      escapeHtml(error.message);
+  }
 }
 
 function askAI() {
