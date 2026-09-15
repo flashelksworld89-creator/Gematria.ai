@@ -1193,11 +1193,17 @@ function saved() {
                 e => `
                 <tr>
 
-                    <td>
-                        <b>
-                            ${esc(e.text)}
-                        </b>
-                    </td>
+                <td>
+    <b>
+        ${esc(e.text)}
+    </b>
+    <button
+        class="delete-entry"
+        data-id="${e.id}"
+        title="Delete"
+        style="background:none;border:none;color:#777;font-size:12px;cursor:pointer;padding:2px 4px;opacity:.45;"
+    >×</button>
+</td>
 
                     <td>
 
@@ -1500,7 +1506,29 @@ function numberDB() {
             };
         }
     );
-}
+document
+    .querySelectorAll('.delete-entry')
+    .forEach(button => {
+
+        button.onclick = () => {
+
+            const id = button.dataset.id;
+
+            const entry = E.find(e => String(e.id) === String(id));
+
+            if (!entry) return;
+
+            if (!confirm(`Delete "${entry.text}"?`)) return;
+
+            E = E.filter(e => String(e.id) !== String(id));
+
+            saveEntries();
+
+            renderAll();
+        };
+    });
+
+    }
 
 
 function storyBranches() {
