@@ -1506,27 +1506,7 @@ function numberDB() {
             };
         }
     );
-document
-    .querySelectorAll('.delete-entry')
-    .forEach(button => {
 
-        button.onclick = () => {
-
-            const id = button.dataset.id;
-
-            const entry = E.find(e => String(e.id) === String(id));
-
-            if (!entry) return;
-
-            if (!confirm(`Delete "${entry.text}"?`)) return;
-
-            E = E.filter(e => String(e.id) !== String(id));
-
-            saveEntries();
-
-            renderAll();
-        };
-    });
 
     }
 
